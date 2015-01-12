@@ -9,6 +9,7 @@ package org.jboss.forge.arquillian;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.jboss.arquillian.container.test.spi.ContainerMethodExecutor;
@@ -287,9 +288,22 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
 
    private void waitUntilStable(Furnace furnace) throws InterruptedException
    {
-      while (furnace.getStatus().isStarting())
+      while (!furnace.getStatus().isStarted())
       {
          Thread.sleep(10);
+      }
+      
+      boolean isDefaultLoaded = false;
+      while(!isDefaultLoaded) {
+    	  Thread.sleep(500);
+    	  Set<Addon> addons = furnace.getAddonRegistry().getAddons();
+    	  for(Addon ad : addons) {
+    		  if(ad.getId().toString().contains("DEFAULT")) {
+    			  isDefaultLoaded = true;
+    			  break;
+    		  }
+    		  
+    	  }
       }
    }
 }
