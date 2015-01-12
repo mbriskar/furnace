@@ -52,6 +52,7 @@ public class AddonLoader
 
    public void loadAddon(Addon addon)
    {
+	   System.out.println("Loading addon: " + addon);
       Assert.notNull(addon, "Addon to load must not be null.");
 
       if (addon.getStatus().isMissing())

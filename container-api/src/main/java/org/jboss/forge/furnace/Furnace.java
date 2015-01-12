@@ -43,6 +43,11 @@ public interface Furnace
     * Start this {@link Furnace} instance and wait for completion.
     */
    public void start();
+   
+   /**
+    * Determines if there are any addons being loaded in the furnace
+    */
+   public boolean isStartingAddons();
 
    /**
     * Start this {@link Furnace} instance and wait for completion, using the given {@link ClassLoader} to load core

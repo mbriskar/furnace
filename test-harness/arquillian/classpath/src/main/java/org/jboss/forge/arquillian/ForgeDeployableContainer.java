@@ -77,7 +77,7 @@ public class ForgeDeployableContainer implements DeployableContainer<ForgeContai
    @Override
    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
    {
-
+	  System.out.println("Deploy("+archive+") called.");
       Deployment deployment = deploymentInstance.get();
       final AddonId addonToDeploy = getAddonEntry(deployment);
 

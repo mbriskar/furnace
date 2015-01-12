@@ -33,6 +33,7 @@ public class AddonStateManager
    private MasterGraph graph;
    private final Map<Addon, AddonState> states = new HashMap<Addon, AddonState>();
    private AddonModuleLoader loader;
+   private int printCounter = 0;
 
    public AddonStateManager(LockManager lock)
    {
@@ -98,6 +99,13 @@ public class AddonStateManager
          @Override
          public Set<AddonView> call() throws Exception
          {
+        	 printCounter++;
+        	 if(printCounter == 100) {
+        		 printCounter=0;
+        		 System.out.println("AddonStateManager.getViewsOfAddon called for addon " + addon+"!!!!!");
+        		 System.out.println("AddonStateManager.getViewsOfAddon vertexSet" + getCurrentGraph().getGraph().vertexSet());
+        	 }
+        	
             Set<AddonView> result = new HashSet<AddonView>();
             for (AddonVertex vertex : getCurrentGraph().getGraph().vertexSet())
             {

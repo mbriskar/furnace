@@ -524,4 +524,9 @@ public class FurnaceImpl implements Furnace
    {
       return Boolean.getBoolean("org.jboss.forge.furnace.test");
    }
+
+   @Override
+   public boolean isStartingAddons() {
+	return getAddonLifecycleManager().isStartingAddons();
+   }
 }

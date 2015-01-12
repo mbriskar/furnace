@@ -139,6 +139,7 @@ public class AddonLifecycleManager
 
             if (result == null)
             {
+               System.out.println("AddonLifecycleManager adding new addon with id: " + id);
                result = new AddonImpl(stateManager, id);
                addons.add(result);
             }
@@ -163,12 +164,13 @@ public class AddonLifecycleManager
             HashSet<Addon> result = new HashSet<Addon>();
 
             AddonViewFilter viewFilter = new AddonViewFilter(stateManager, view);
+            System.out.println("!!!!AddonLifecycleManager called with these addons that are going to be filtered by viewfilter and filter: " +addons);
             for (Addon addon : addons)
             {
                if (viewFilter.accept(addon) && filter.accept(addon))
                   result.add(addon);
             }
-
+            System.out.println("!!!!AddonLifecycleManager result: " +result);
             return result;
          }
       });

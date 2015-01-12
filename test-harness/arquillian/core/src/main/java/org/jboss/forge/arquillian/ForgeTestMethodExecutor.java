@@ -9,6 +9,7 @@ package org.jboss.forge.arquillian;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.jboss.arquillian.container.test.spi.ContainerMethodExecutor;
@@ -58,9 +59,13 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
 
             waitUntilStable(furnace);
             System.out.println("Searching for test [" + testClassName + "]");
-
+            boolean defaultFound = false;
             for (Addon addon : addonRegistry.getAddons())
             {
+               if(addon.getId().toString().contains("DEFAULT")) {
+            		System.out.println("DEFAULT IS HERE!!! and is in the status " + addon.getStatus());
+            		defaultFound=true;
+            	}
                if (addon.getStatus().isStarted())
                {
                   ServiceRegistry registry = addon.getServiceRegistry();
@@ -80,7 +85,13 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
                                           "You must have only one @Deployment(testable=true\"); deployment");
                      }
                   }
+                  if(addon.getId().toString().contains("DEFAULT") && testInstance ==null) {
+                	  throw new IllegalStateException("DEFAULT was looking into but didn't find anything!!!!!");
+              	}
                }
+            }
+            if(!defaultFound) {
+            	System.out.println("DEFAULT WAS NOT HERE!!!" + addonRegistry.getAddons());
             }
          }
          catch (Exception e)
@@ -287,9 +298,32 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
 
    private void waitUntilStable(Furnace furnace) throws InterruptedException
    {
-      while (furnace.getStatus().isStarting())
+      while (!furnace.getStatus().isStarted())
       {
          Thread.sleep(10);
+      }
+      while(furnace.isStartingAddons())
+      {
+          Thread.sleep(10);
+      }
+      
+      boolean isDefaultLoaded = false;
+      int counter = 0;
+      while(!isDefaultLoaded) {
+    	  counter++;
+    	  if(counter == 20) {
+    		  break;
+    	  }
+    	  Thread.sleep(500);
+    	  Set<Addon> addons = furnace.getAddonRegistry().getAddons();
+    	  System.out.println(addons);
+    	  for(Addon ad : addons) {
+    		  if(ad.getId().toString().contains("DEFAULT")) {
+    			  isDefaultLoaded = true;
+    			  break;
+    		  }
+    		  
+    	  }
       }
    }
 }
