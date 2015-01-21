@@ -30,7 +30,12 @@ import org.jboss.forge.furnace.util.Assert;
 public class AddonStateManager
 {
    private final LockManager lock;
-   private MasterGraph graph;
+   public LockManager getLock()
+{
+    return lock;
+}
+
+private MasterGraph graph;
    private final Map<Addon, AddonState> states = new HashMap<Addon, AddonState>();
    private AddonModuleLoader loader;
    private int printCounter = 0;
@@ -102,8 +107,6 @@ public class AddonStateManager
         	 printCounter++;
         	 if(printCounter == 100) {
         		 printCounter=0;
-        		 System.out.println("AddonStateManager.getViewsOfAddon called for addon " + addon+"!!!!!");
-        		 System.out.println("AddonStateManager.getViewsOfAddon vertexSet" + getCurrentGraph().getGraph().vertexSet());
         	 }
         	
             Set<AddonView> result = new HashSet<AddonView>();

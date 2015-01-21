@@ -86,7 +86,7 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
                      }
                   }
                   if(addon.getId().toString().contains("DEFAULT") && testInstance ==null) {
-                	  throw new IllegalStateException("DEFAULT was looking into but didn't find anything!!!!!");
+                	  System.out.println("DEFAULT was looking into but didn't find anything!!!!!");
               	}
                }
             }
@@ -237,6 +237,7 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
                }
                catch (ExecutionException e)
                {
+                   System.out.println(e);
                   throw new IllegalStateException(
                            "Test runner could not locate test class [" + testClassName + "] in any deployed Addon.",
                            e.getCause());
@@ -311,7 +312,11 @@ public class ForgeTestMethodExecutor implements ContainerMethodExecutor
       int counter = 0;
       while(!isDefaultLoaded) {
     	  counter++;
-    	  if(counter == 20) {
+    	  if(counter%10 == 0) {
+             System.out.println("....waiting...");
+             System.err.println("....waiting...");
+          }
+    	  if(counter == 100) {
     		  break;
     	  }
     	  Thread.sleep(500);

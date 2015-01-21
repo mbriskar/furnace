@@ -34,12 +34,18 @@ public class MasterGraphChangeHandler
    public void hotSwapChanges()
    {
       initGraph();
+      // if vertex is missing or any dependency of it was missing (is dirty), then is dirty also
       markDirty();
       markRemovedDirty();
+      //stop all the addons that are dirty
       stopDirty();
+      //stop all dirty addons
       stopRemoved();
+      //load all missing addons
       loadAddons();
+      //start all addons in the state LOADED
       startupIncremental();
+      //clear all the dirty statues throughout the whole graph
       clearDirtyStatus();
    }
 
@@ -80,7 +86,7 @@ public class MasterGraphChangeHandler
             }
          }
       }
-
+      // If in the previous graph is the same vertex, re-set the addon
       DepthFirstIterator<AddonVertex, AddonDependencyEdge> iterator = new DepthFirstIterator<AddonVertex, AddonDependencyEdge>(
                graph.getGraph());
       iterator.addTraversalListener(new TraversalListenerAdapter<AddonVertex, AddonDependencyEdge>()
@@ -144,6 +150,9 @@ public class MasterGraphChangeHandler
          iterator.next();
    }
 
+   /**
+    * Marks dirty all the vertices in the status MISSING or FAILED and all the vertices whose dependencies are dirty.
+    */
    private void markDirty()
    {
       DepthFirstIterator<AddonVertex, AddonDependencyEdge> iterator = new DepthFirstIterator<AddonVertex, AddonDependencyEdge>(
@@ -192,6 +201,9 @@ public class MasterGraphChangeHandler
          iterator.next();
    }
 
+   /**
+    * Marks all the vertices that were present in the previous graph and are missing now to be dirty. Also marks all the vertex having outgoing edge to such vertex to dirty.
+    */
    private void markRemovedDirty()
    {
       if (lastMasterGraph != null)
@@ -240,6 +252,9 @@ public class MasterGraphChangeHandler
       }
    }
 
+   /**
+    * Stop all the dirty addons present in the in the graph
+    */
    private void stopDirty()
    {
       BreadthFirstIterator<AddonVertex, AddonDependencyEdge> iterator = new BreadthFirstIterator<AddonVertex, AddonDependencyEdge>(

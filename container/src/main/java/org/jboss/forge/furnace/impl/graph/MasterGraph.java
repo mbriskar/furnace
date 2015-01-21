@@ -118,6 +118,13 @@ public class MasterGraph
       return result;
    }
 
+   /**
+    * Checks if the localVertex subtree in the graph is equivalent to the otherVertex subtree in the otherGraph.
+    * @param localVertex
+    * @param otherGraph
+    * @param otherVertex
+    * @return
+    */
    public boolean isSubtreeEquivalent(AddonVertex localVertex,
             DirectedGraph<AddonVertex, AddonDependencyEdge> otherGraph, AddonVertex otherVertex)
    {

@@ -46,7 +46,7 @@ import org.jboss.forge.furnace.util.Sets;
 public class AddonLifecycleManager
 {
    private static final Logger logger = Logger.getLogger(AddonLifecycleManager.class.getName());
-
+   private boolean counter = true;
    private final LockManager lock;
    private final FurnaceImpl furnace;
    private final AddonLoader loader;
@@ -164,13 +164,23 @@ public class AddonLifecycleManager
             HashSet<Addon> result = new HashSet<Addon>();
 
             AddonViewFilter viewFilter = new AddonViewFilter(stateManager, view);
+            
             System.out.println("!!!!AddonLifecycleManager called with these addons that are going to be filtered by viewfilter and filter: " +addons);
+            if(counter) {
+                counter =false;
+                System.out.println("Furnace here is: " + furnace.toString() + " with hashCode " + furnace.hashCode());
+                System.out.println("furnace.getAddonRegistry() here is: " + furnace.getAddonRegistry() + " with hashCode " + furnace.getAddonRegistry().hashCode());
+                
+                //prevent the cycle
+            } else {
+                counter=true;
+            }
+           
             for (Addon addon : addons)
             {
                if (viewFilter.accept(addon) && filter.accept(addon))
                   result.add(addon);
             }
-            System.out.println("!!!!AddonLifecycleManager result: " +result);
             return result;
          }
       });
@@ -239,6 +249,8 @@ public class AddonLifecycleManager
       {
          if (stateManager.getViewsOf(addon).contains(entry.getKey()))
          {
+            System.out.println("Incrementing: " + addon);
+            System.err.println("Incrementing: " + addon);
             entry.setValue(entry.getValue() + 1);
          }
       }

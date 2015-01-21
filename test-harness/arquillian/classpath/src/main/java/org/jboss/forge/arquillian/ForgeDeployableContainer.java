@@ -74,6 +74,9 @@ public class ForgeDeployableContainer implements DeployableContainer<ForgeContai
    private boolean undeploying = false;
    private ForgeContainerConfiguration configuration;
 
+   /**
+    * This method is called by Arquillian to deploy the archive. This container should be already started in such time.
+    */
    @Override
    public ProtocolMetaData deploy(final Archive<?> archive) throws DeploymentException
    {
@@ -124,6 +127,11 @@ public class ForgeDeployableContainer implements DeployableContainer<ForgeContai
       return new ProtocolMetaData().addContext(furnaceHolder);
    }
 
+   /**
+    * Used to call actions that should wait for the furnace to rescan the directory
+    * @param action
+    * @return
+    */
    private <T> T waitForConfigurationRescan(Callable<T> action)
    {
 
@@ -203,6 +211,12 @@ public class ForgeDeployableContainer implements DeployableContainer<ForgeContai
       }
    }
 
+   /**
+    * Creates and copies the archive into the addon directory with newly created addon.xml, updates installed.xml
+    * @param archive
+    * @param repository
+    * @param addonToDeploy
+    */
    private void deployToRepository(Archive<?> archive, MutableAddonRepository repository, final AddonId addonToDeploy)
    {
       File destDir = repository.getAddonBaseDir(addonToDeploy);
@@ -271,6 +285,9 @@ public class ForgeDeployableContainer implements DeployableContainer<ForgeContai
       this.configuration = configuration;
    }
 
+   /**
+    * Starts furnace and waits until it scans the directory
+    */
    @Override
    public void start() throws LifecycleException
    {
@@ -359,6 +376,9 @@ public class ForgeDeployableContainer implements DeployableContainer<ForgeContai
       throw new UnsupportedOperationException("Descriptors not supported by Furnace");
    }
 
+   /**
+    * Runnable that creates and starts furnace in the server mode
+    */
    private class ForgeRunnable implements Runnable
    {
       private final Furnace furnace;

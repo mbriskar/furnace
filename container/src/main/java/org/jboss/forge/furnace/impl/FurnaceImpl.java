@@ -30,12 +30,16 @@ import java.util.logging.Logger;
 import org.jboss.forge.furnace.ContainerStatus;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.addons.AddonStatus;
 import org.jboss.forge.furnace.addons.AddonView;
 import org.jboss.forge.furnace.impl.addons.AddonLifecycleManager;
 import org.jboss.forge.furnace.impl.addons.AddonRegistryImpl;
 import org.jboss.forge.furnace.impl.addons.AddonRepositoryImpl;
 import org.jboss.forge.furnace.impl.addons.ImmutableAddonRepository;
+import org.jboss.forge.furnace.impl.util.ExceptionFuture;
+import org.jboss.forge.furnace.impl.util.NullFuture;
 import org.jboss.forge.furnace.lock.LockManager;
+import org.jboss.forge.furnace.lock.LockMode;
 import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.repositories.AddonRepositoryMode;
 import org.jboss.forge.furnace.spi.ContainerLifecycleListener;
@@ -489,11 +493,20 @@ public class FurnaceImpl implements Furnace
    @Override
    public ContainerStatus getStatus()
    {
-      if (!alive)
-         return ContainerStatus.STOPPED;
+       return this.lock.performLocked(LockMode.READ, new Callable<ContainerStatus>() {
 
-      boolean startingAddons = getLifecycleManager().isStartingAddons();
-      return startingAddons ? ContainerStatus.STARTING : status;
+           @Override
+           public ContainerStatus call() throws Exception
+           {
+               if (!alive)
+                   return ContainerStatus.STOPPED;
+
+                boolean startingAddons = getLifecycleManager().isStartingAddons();
+                return startingAddons ? ContainerStatus.STARTING : status;
+           }
+              
+          });
+     
    }
 
    public List<ContainerLifecycleListener> getRegisteredListeners()

@@ -7,15 +7,18 @@
 package org.jboss.forge.furnace.impl.addons;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonDependency;
 import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonStatus;
+import org.jboss.forge.furnace.addons.AddonView;
 import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.impl.util.ExceptionFuture;
 import org.jboss.forge.furnace.impl.util.NullFuture;
+import org.jboss.forge.furnace.lock.LockMode;
 import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.Assert;
@@ -27,6 +30,7 @@ public class AddonImpl implements Addon
 {
    private final AddonId id;
    private AddonStateManager manager;
+   private int counter= 0;
 
    public AddonImpl(AddonStateManager manager, AddonId id)
    {
@@ -82,24 +86,36 @@ public class AddonImpl implements Addon
    @Override
    public AddonStatus getStatus()
    {
-      AddonStatus result = AddonStatus.MISSING;
+       return this.manager.getLock().performLocked(LockMode.READ, new Callable<AddonStatus>() {
 
-      if (getClassLoader() != null)
-         result = AddonStatus.LOADED;
+        @Override
+        public AddonStatus call() throws Exception
+        {
+            counter++;
+            AddonStatus result = AddonStatus.MISSING;
 
-      if (getFuture() != null)
-      {
-         if (!(getFuture() instanceof NullFuture))
-         {
-            if (getFuture().isDone())
-               result = AddonStatus.STARTED;
+            if (getClassLoader() != null)
+               result = AddonStatus.LOADED;
 
-            if (getFuture() instanceof ExceptionFuture || getFuture().isCancelled())
-               result = AddonStatus.FAILED;
-         }
-      }
+            if (getFuture() != null)
+            {
+               if (!(getFuture() instanceof NullFuture))
+               {
+                  if (getFuture().isDone())
+                     result = AddonStatus.STARTED;
 
-      return result;
+                  if (getFuture() instanceof ExceptionFuture || getFuture().isCancelled())
+                     result = AddonStatus.FAILED;
+               }
+            }
+            if(counter%50 == 0) {
+                System.out.println("Status of the addon " + getId() + " is " + result);
+                System.err.println("Status of the addon " + getId() + " is " + result);
+            }
+            return result;
+        }
+           
+       });
    }
 
    @Override

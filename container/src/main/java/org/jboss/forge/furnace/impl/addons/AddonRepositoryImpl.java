@@ -42,7 +42,7 @@ import org.jboss.forge.parser.xml.XMLParser;
 import org.jboss.forge.parser.xml.XMLParserException;
 
 /**
- * Used to perform Addon installation/registration operations.
+ * Used to perform Addon installation/registration operations, you can easily imagine it as a folder containing all of the addons.
  * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  * @author <a href="mailto:koen.aers@gmail.com">Koen Aers</a>
@@ -104,6 +104,9 @@ public final class AddonRepositoryImpl implements MutableAddonRepository
 
    private final File addonDir;
 
+   /**
+    * Version is used to indicate a change in the repository (in which the version is incremented)
+    */
    private int version = 1;
 
    private AddonRepositoryImpl(LockManager lock, File dir)
@@ -114,10 +117,17 @@ public final class AddonRepositoryImpl implements MutableAddonRepository
       this.lock = lock;
    }
 
+   /**
+    * Creates the addon.xml for the specified addon, adds <dependencies> in it and copies all of the required addon resources into the repository
+    * @param addon
+    * @param dependencies
+    * @param resources
+    * @return
+    */
    @Override
    public boolean deploy(final AddonId addon, final Iterable<AddonDependencyEntry> dependencies,
             final Iterable<File> resources)
-   {
+   { System.out.println("MBRISKAR: Deploying new addon " + addon + "in the repository " + "");
       return lock.performLocked(LockMode.WRITE, new Callable<Boolean>()
       {
          @Override
@@ -235,6 +245,11 @@ public final class AddonRepositoryImpl implements MutableAddonRepository
       });
    }
 
+   /**
+    * Saves the addon in the installed.xml of this AddonRepository
+    * @param addon
+    * @return
+    */
    @Override
    public boolean enable(final AddonId addon)
    {
@@ -325,6 +340,9 @@ public final class AddonRepositoryImpl implements MutableAddonRepository
       });
    }
 
+   /**
+    * Returns the addon {@link ADDON_DESCRIPTOR_FILENAME}
+    */
    @Override
    public File getAddonDescriptor(final AddonId addon)
    {
@@ -425,6 +443,10 @@ public final class AddonRepositoryImpl implements MutableAddonRepository
       return addonDir;
    }
 
+   /**
+    * Gets or creates new {@link REGISTRY_DESCRIPTOR_NAME} file in the repository
+    * @return
+    */
    private File getRepositoryRegistryFile()
    {
       return lock.performLocked(LockMode.READ, new Callable<File>()
@@ -615,6 +637,11 @@ public final class AddonRepositoryImpl implements MutableAddonRepository
       return version;
    }
 
+   /**
+    * Adds node to the {@link REGISTRY_DESCRIPTOR_NAME} file
+    * @param installed
+    * @throws FileNotFoundException
+    */
    private void saveRegistryFile(Node installed) throws FileNotFoundException
    {
       FileOutputStream outStream = null;
