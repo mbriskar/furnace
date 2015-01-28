@@ -59,7 +59,7 @@ public class AddonRegistryImpl implements AddonRegistry
       this.repositories = new LinkedHashSet<>(repositories);
       this.name = name;
 
-      logger.log(Level.FINE, "Instantiated AddonRegistryImpl: " + this);
+      logger.log(Level.FINE, "Instantiated AddonRegistryImpl: " );
    }
 
    @Override

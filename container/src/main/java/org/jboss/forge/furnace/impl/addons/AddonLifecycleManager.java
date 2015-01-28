@@ -166,10 +166,15 @@ public class AddonLifecycleManager
             AddonViewFilter viewFilter = new AddonViewFilter(stateManager, view);
             
             System.out.println("!!!!AddonLifecycleManager called with these addons that are going to be filtered by viewfilter and filter: " +addons);
-                System.out.println("Furnace here is:  with hashCode " + furnace.hashCode());
-                System.out.println("furnace.getAddonRegistry() here is: with hashCode " + furnace.getAddonRegistry().hashCode());
+            if(counter) {
+                counter =false;
+                System.err.println("Furnace here is: " + furnace.toString() + " with hashCode " + furnace.hashCode());
+                System.err.println("furnace.getAddonRegistry() here is: " + furnace.getAddonRegistry() + " with hashCode " + furnace.getAddonRegistry().hashCode());
                 
                 //prevent the cycle
+            } else {
+                counter=true;
+            }
            
             for (Addon addon : addons)
             {
